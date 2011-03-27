@@ -1,0 +1,53 @@
+<h1>CODOC - a C Documentation program</h1>
+<p>
+It is designed to allow the authors of the documentation
+to not modify the actual code, but still allow the documentation
+to be easily updated when the code changes.
+<p>
+Here's how it works.
+<p>
+Suppose you wanted to document your header file, tmpheader.h:
+<pre>
+#ifndef __TMP_HEADER_H_
+#define __TMP_HEADER_H_
+
+int tmp_make_file_descriptor      (const char    *prefix);
+
+#endif
+</pre>
+
+Run <tt>codoc</tt> and it will make <tt>codoc.template</tt>
+for you:
+
+<pre>
+@@@SECTION tmpheader.h
+@@@FUNCTION tmp_make_file_descriptor int
+@@@FUNCTION_PARAM tmp_make_file_descriptor 0 prefix const char *
+</pre>
+
+Now you may enter comments for:
+<ul>
+<li>the header file
+<li>the function
+<li>the function's parameter.
+</ul>
+<tt>codoc</tt> knows many other common constructs.
+When you run <tt>codoc</tt> again it will use the
+comments you have entered to make the <tt>codoc.sgml</tt>
+file.
+<p>
+Now, suppose the header file changes.
+Just run <tt>codoc</tt> again.  If file timestamps
+are working, <tt>codoc.template</tt> will be read in and updated,
+and <tt>codoc.sgml</tt> will be generated from that.
+If timestamps aren't working, use <tt>codoc --force</tt>.
+<p>
+Sometimes, if really unusual changes occur, names can 
+conflict, and <tt>codoc</tt> won't do anything until
+the old comments are manually removed from the template file.
+(Currently a bug exists where if a function starts taking one
+fewer parameter we don't notice that the old sgml blurb is stale...)
+<p>
+For more specific information, please see the
+<a href="http://codoc.sourceforge.net/manual/codoc-manual.html">user documentation</a>.
+

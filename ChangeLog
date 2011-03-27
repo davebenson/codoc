@@ -1,0 +1,34 @@
+codoc (???)
+ 
+  * worked on support for bitfields (daveb)
+  * remove CPP_FLAGS, a source of cvs conflicts (daveb/pmineiro)
+  * switched to docbook-xml.  okay, this is technically cruel,
+    but i'm sure new users will appreciate it, and docbook sgml seems
+    done for.  the only really important changes are
+    - you must install/use tools for processing docbook xml 
+      instead of sgml-tools, while is obsolete. [see manual]
+    - in codoc.template, you must change any docbook-sgml idioms not
+      accepted by docbook-xml to proper docbook-xml.
+
+ --
+  
+codoc (0.2-1)
+
+  * Small bug fixes.
+  * Packaging.
+
+ -- Dave Benson <daveb@ffem.org>  Thu,  1 Mar 2001 11:47:38 -0800
+
+codoc (0.1-1)
+
+  * Most idioms working.
+  * Still problems with typedef struct _X X; (and no public decl)
+    and non _X X naming schemes.
+
+ -- Dave Benson <daveb@ffem.org>  Thu,  1 Mar 2001 11:47:38 -0800
+
+codoc (0.0-1)
+
+  * Initial release.
+
+ -- Dave Benson <daveb@ffem.org>  Thu,  1 Mar 2001 11:47:38 -0800

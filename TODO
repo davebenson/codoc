@@ -1,0 +1,17 @@
+what about non-`typedef struct _X X;' naming schemes?
+
+- for some reason all-constructs.h seems to give a lot of warnings.
+  (maybe verify that my last patch to libcodoc.c to add
+  bit-field support didn't blow it)
+- make the codoc.template file support type_suffixes for
+  member arrays and bitfields to work.
+
+test:
+  bodyless struct's: typedef struct _X X;
+
+To consider supporting
+  #define's   [but which?]
+
+Not supported:
+  anonymous unions, enums, or structs
+  nested structures

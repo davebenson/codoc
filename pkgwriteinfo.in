@@ -1,0 +1,23 @@
+Package: codoc
+Section: devel
+Group: Development/Tools
+Priority: low
+Home-Page: http://codoc.sourceforge.net/
+Source-Url: http://download.sourceforge.net/codoc/codoc-@VERSION@.tar.gz
+Author: David Benson <daveb@ffem.org>
+Version: @VERSION@
+Release: 1
+Synopsis: A documentation system for C APIs.
+Packager: daveb@ffem.org
+Packager-Email: daveb@ffem.org
+License: GPL
+Changelog: ChangeLog
+Description: Generate documentation and templates from C code.
+  The final documentation is rendered from XML.
+
+Build: {MAIN}
+
+Target: {MAIN}
+Files: /usr/bin/codoc /usr/bin/codoc-config
+Doc: /usr/share/doc/codoc/codoc-manual.txt
+Doc: /usr/share/doc/codoc/codoc-manual.sgml

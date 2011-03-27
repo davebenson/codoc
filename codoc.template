@@ -1,0 +1,271 @@
+@@@SUBDIR .
+@@@SECTION libcodoc.h Database of CO Structures
+This is structures representing the parsed
+C code, and high-level interfaces for loading, saving, and merging
+these structures.
+@@@STRUCT COParameter
+A parameter to a function prototype.
+@@@STRUCT_MEMBER COParameter name char          *
+Name of the parameter.
+@@@STRUCT_MEMBER COParameter type char          *
+Type of the parameter.
+@@@STRUCT_MEMBER COParameter sgml_blurb *
+DocBook SGML description of the parameter.
+@@@STRUCT_MEMBER COParameter flags COEntryFlags
+@@@STRUCT_MEMBER COParameter xml_blurb char          *
+@@@STRUCT COFunction
+A function prototype.
+@@@STRUCT_MEMBER COFunction parameters COParameter  **
+The parameters to the function.
+@@@STRUCT_MEMBER COFunction sgml_blurb *
+DocBook SGML description of the function.
+@@@STRUCT_MEMBER COFunction function_name char          *
+Name of the function.
+@@@STRUCT_MEMBER COFunction return_type char          *
+Return type of the function.
+@@@STRUCT_MEMBER COFunction num_parameters int
+Number of parameters that should be passed to the function.
+@@@STRUCT_MEMBER COFunction flags COEntryFlags
+@@@STRUCT_MEMBER COFunction xml_blurb char          *
+@@@STRUCT COMember
+A member of a structure definition.
+@@@STRUCT_MEMBER COMember parameters COParameter  **
+@@@STRUCT_MEMBER COMember name char          *
+Name of the member.
+@@@STRUCT_MEMBER COMember type char          *
+Type of the member.
+@@@STRUCT_MEMBER COMember is_private 
+Whether the member is private.
+@@@STRUCT_MEMBER COMember sgml_blurb *
+DocBook SGML description of the member.
+@@@STRUCT_MEMBER COMember is_function gboolean
+@@@STRUCT_MEMBER COMember num_parameters int
+@@@STRUCT_MEMBER COMember flags COEntryFlags
+@@@STRUCT_MEMBER COMember xml_blurb char          *
+@@@STRUCT COStructure
+A structure definition.
+@@@STRUCT_MEMBER COStructure name char          *
+Name of the structure.
+@@@STRUCT_MEMBER COStructure sgml_blurb *
+DocBook SGML description of the structure.
+@@@STRUCT_MEMBER COStructure members GHashTable    *
+Members of the structure, indexed by name.
+@@@STRUCT_MEMBER COStructure member_names char         **
+Names of the members of the structure, as they appear in the .h file.
+@@@STRUCT_MEMBER COStructure flags COEntryFlags
+@@@STRUCT_MEMBER COStructure xml_blurb char          *
+@@@STRUCT COEnumerationValue
+One possible state of an enumeration.
+@@@STRUCT_MEMBER COEnumerationValue name char          *
+The all-capital name of the value.
+@@@STRUCT_MEMBER COEnumerationValue sgml_blurb *
+DocBook SGML description of that value.
+@@@STRUCT_MEMBER COEnumerationValue flags COEntryFlags
+@@@STRUCT_MEMBER COEnumerationValue xml_blurb char          *
+@@@STRUCT COEnumeration
+An enumeration:  a list of defined values.
+@@@STRUCT_MEMBER COEnumeration name char          *
+Name of this enumeration.
+@@@STRUCT_MEMBER COEnumeration sgml_blurb *
+DocBook SGML description of this enumeration.
+@@@STRUCT_MEMBER COEnumeration values GHashTable    *
+Values of the enumeration, indexed by name.
+@@@STRUCT_MEMBER COEnumeration flags COEntryFlags
+@@@STRUCT_MEMBER COEnumeration xml_blurb char          *
+@@@STRUCT COEntry
+A &lt;sect1&gt; block of the text.
+@@@STRUCT_MEMBER COEntry structure COStructure   *
+If non-NULL, this entry covers the referenced structure.
+@@@STRUCT_MEMBER COEntry function COFunction    *
+If non-NULL, this entry covers the referenced function.
+@@@STRUCT_MEMBER COEntry enumeration COEnumeration *
+If non-NULL, this entry covers the referenced enumeration.
+@@@STRUCT_MEMBER COEntry global COGlobal      *
+@@@STRUCT_MEMBER COEntry the_union COUnion       *
+@@@STRUCT_MEMBER COEntry function_typedef COFunction    *
+@@@STRUCT_MEMBER COEntry structure_stub *
+@@@STRUCT_MEMBER COEntry struct_stub COStructStub  *
+@@@STRUCT COSection
+A &lt;chapter&gt; of the text.
+@@@STRUCT_MEMBER COSection title char          *
+The title of the section.
+@@@STRUCT_MEMBER COSection first_entry GSList        *
+First entry in the section.
+@@@STRUCT_MEMBER COSection last_entry GSList        *
+Last entry in the section.
+@@@STRUCT_MEMBER COSection sgml_blurb *
+DocBook SGML description (preface) of the section.
+@@@STRUCT_MEMBER COSection h_filename char          *
+the <filename>.h</filename> covered by this section.
+@@@STRUCT_MEMBER COSection xml_blurb char          *
+@@@STRUCT CODatabase
+Database of all information in our present context.
+@@@STRUCT_MEMBER CODatabase last_section GSList        *
+Last COSection in the book.
+@@@STRUCT_MEMBER CODatabase default_section COSection     *
+@@@STRUCT_MEMBER CODatabase structures GHashTable    *
+Map from type name (as a string) to COStructure.
+@@@STRUCT_MEMBER CODatabase functions GHashTable    *
+Map from the name of the function to COFunction.
+@@@STRUCT_MEMBER CODatabase sections GHashTable    *
+Map from the name of the <filename>.h</filename>-file to COSection.
+@@@STRUCT_MEMBER CODatabase first_section GSList        *
+First COSection in the book.
+@@@STRUCT_MEMBER CODatabase sgml_filename *
+@@@STRUCT_MEMBER CODatabase enumerations GHashTable    *
+Map from the name of the <filename>.h</filename>-file to COSection.
+@@@STRUCT_MEMBER CODatabase globals GHashTable    *
+@@@STRUCT_MEMBER CODatabase unions GHashTable    *
+@@@STRUCT_MEMBER CODatabase subdirs GSList        *
+@@@STRUCT_MEMBER CODatabase cpp_flags char          *
+@@@STRUCT_MEMBER CODatabase function_typedefs GHashTable    *
+@@@STRUCT_MEMBER CODatabase struct_stubs GHashTable    *
+@@@STRUCT_MEMBER CODatabase omissions GHashTable    *
+@@@STRUCT_MEMBER CODatabase xml_filename char          *
+@@@FUNCTION co_database_new CODatabase*
+Create a new, empty database.
+@@@FUNCTION co_database_load CODatabase*
+Load a database from a template file.
+@@@FUNCTION_PARAM co_database_load 0 filename const char       *
+The template filename.
+@@@FUNCTION co_database_safe_save gboolean
+Save the database, taking special care to make a backup
+and fail gracefully.
+@@@FUNCTION_PARAM co_database_safe_save 0 database CODatabase       *
+Database to save.
+@@@FUNCTION_PARAM co_database_safe_save 1 filename const char       *
+Output filename for template file.
+@@@FUNCTION co_database_merge gboolean
+Merge in all the specified <filename>.h</filename> files.
+@@@FUNCTION_PARAM co_database_merge 0 database CODatabase       *
+Database to augment.
+@@@FUNCTION_PARAM co_database_merge 1 cpp_flags const char       *
+Flags to pass to <command>cpp</command>.
+@@@FUNCTION co_database_destroy void
+Destroy a database and its affiliated in memory data.
+@@@FUNCTION_PARAM co_database_destroy 0 database CODatabase       *
+The database to destroy.
+@@@FUNCTION co_database_render gboolean
+Make DocBook SGML from the database.
+@@@FUNCTION_PARAM co_database_render 0 database CODatabase       *
+The database to output as SGML.
+@@@STRUCT COContext
+@@@STRUCT_MEMBER COContext file const char    *
+@@@STRUCT_MEMBER COContext lineno int
+@@@STRUCT_MEMBER COContext in_h_file gboolean
+@@@STRUCT_MEMBER COContext privacy_info COPrivacyInfo
+@@@FUNCTION context_message void
+@@@FUNCTION_PARAM context_message 0 context COContext       *
+@@@FUNCTION_PARAM context_message 1 format const char      *
+@@@FUNCTION_PARAM context_message 2 ... ...
+@@@FUNCTION context_warning void
+@@@FUNCTION_PARAM context_warning 0 context COContext       *
+@@@FUNCTION_PARAM context_warning 1 format const char      *
+@@@FUNCTION_PARAM context_warning 2 ... ...
+@@@STRUCT COUnion
+@@@STRUCT_MEMBER COUnion name char          *
+@@@STRUCT_MEMBER COUnion num_objects int
+@@@STRUCT_MEMBER COUnion type_name_pairs char         **
+@@@STRUCT_MEMBER COUnion sgml_blurb *
+@@@STRUCT_MEMBER COUnion flags COEntryFlags
+@@@STRUCT_MEMBER COUnion xml_blurb char          *
+@@@STRUCT COGlobal
+@@@STRUCT_MEMBER COGlobal type char          *
+@@@STRUCT_MEMBER COGlobal name char          *
+@@@STRUCT_MEMBER COGlobal sgml_blurb *
+@@@STRUCT_MEMBER COGlobal flags COEntryFlags
+@@@STRUCT_MEMBER COGlobal xml_blurb char          *
+@@@STRUCT COStructStub
+@@@STRUCT_MEMBER COStructStub name char          *
+@@@STRUCT_MEMBER COStructStub sgml_blurb *
+@@@STRUCT_MEMBER COStructStub flags COEntryFlags
+@@@STRUCT_MEMBER COStructStub xml_blurb char          *
+@@@FUNCTION co_database_set_cpp_flags void
+@@@FUNCTION_PARAM co_database_set_cpp_flags 0 database CODatabase       *
+@@@FUNCTION_PARAM co_database_set_cpp_flags 1 cpp_flags const char       *
+@@@FUNCTION co_database_add_subdir void
+@@@FUNCTION_PARAM co_database_add_subdir 0 database CODatabase       *
+@@@FUNCTION_PARAM co_database_add_subdir 1 subdirs const char       *
+@@@FUNCTION codoc_util_is_c_type gboolean
+@@@FUNCTION_PARAM codoc_util_is_c_type 0 pstr const char     **
+@@@STRUCT COPrivacyInfo
+@@@STRUCT_MEMBER COPrivacyInfo is_private gboolean
+@@@ENUM COEntryFlags
+@@@ENUM_VALUE COEntryFlags CO_ENTRY_FLAGS_PRIVATE
+@@@ENUM_VALUE COEntryFlags CO_ENTRY_FLAGS_GOT_IN_TEMPLATE
+@@@ENUM_VALUE COEntryFlags CO_ENTRY_FLAGS_GOT_IN_HFILE
+@@@SECTION hfile.h Code to Parse <filename>.h</filename> files
+Raw <filename>.h</filename> parsing code.
+Just converts it to lists and so on, no "real" parsing.
+@@@FUNCTION hfile_base_cast HFile   *
+@@@FUNCTION_PARAM hfile_base_cast 0 ptr gpointer
+@@@FUNCTION_PARAM hfile_base_cast 1 file const char *
+@@@FUNCTION_PARAM hfile_base_cast 2 line int
+@@@FUNCTION hfile_cast gpointer
+@@@FUNCTION_PARAM hfile_cast 0 object gpointer
+@@@FUNCTION_PARAM hfile_cast 1 type int
+@@@FUNCTION_PARAM hfile_cast 2 type_name const char*
+@@@FUNCTION_PARAM hfile_cast 3 file const char *
+@@@FUNCTION_PARAM hfile_cast 4 line int
+@@@STRUCT HFileList
+A list of other HFile sections.
+@@@STRUCT_MEMBER HFileList type int
+The value <literal>HFILE_TYPE_LIST</literal>, used to
+dynamically identify HFiles.
+@@@STRUCT_MEMBER HFileList has_braces gboolean
+Whether the list was enclosed in curly braces.
+@@@STRUCT_MEMBER HFileList list GSList         *
+List of HFiles.
+@@@STRUCT_MEMBER HFileList lineno int
+@@@STRUCT_MEMBER HFileList filename char           *
+@@@STRUCT HFileSemicolon
+An HFile representing a semicolon character.
+@@@STRUCT_MEMBER HFileSemicolon type int
+The value <literal>HFILE_TYPE_SEMICOLON</literal>, used to
+dynamically identify HFiles.
+@@@STRUCT_MEMBER HFileSemicolon lineno int
+@@@STRUCT_MEMBER HFileSemicolon filename char           *
+@@@STRUCT HFileText
+An HFile representing some c code.
+@@@STRUCT_MEMBER HFileText type int
+The value <literal>HFILE_TYPE_TEXT</literal>, used to
+dynamically identify HFiles.
+@@@STRUCT_MEMBER HFileText text char           *
+The string represented.
+@@@STRUCT_MEMBER HFileText lineno int
+@@@STRUCT_MEMBER HFileText filename char           *
+@@@STRUCT HFileComment
+An HFile representing a comment.
+@@@STRUCT_MEMBER HFileComment type int
+The value <literal>HFILE_TYPE_COMMENT</literal>, used to
+dynamically identify HFiles.
+@@@STRUCT_MEMBER HFileComment comment char           *
+The comment text.
+@@@STRUCT_MEMBER HFileComment lineno int
+@@@STRUCT_MEMBER HFileComment filename char           *
+@@@FUNCTION hfile_parse HFileList*
+Parse a HFile into our internal representation.
+@@@FUNCTION_PARAM hfile_parse 0 filename const char      *
+The <filename>.h</filename> to parse.
+@@@FUNCTION_PARAM hfile_parse 1 cpp_options const char      *
+Flags to pass to <command>cpp</command>.
+@@@FUNCTION hfile_destroy void
+Destroy an HFile and its affiliated data.
+@@@FUNCTION_PARAM hfile_destroy 0 to_destroy HFile           *
+The HFile to destroy.
+@@@FUNCTION hfile_dump void
+Print the HFile out.
+@@@FUNCTION_PARAM hfile_dump 0 hfile HFile           *
+The HFile to print.
+@@@FUNCTION_PARAM hfile_dump 1 indent int
+The number of spaces to indent this output by.
+@@@FUNCTION_PARAM hfile_dump 2 output FILE            *
+The FILE* to render to output to.
+@@@FUNCTION hfile_get_word char *
+@@@FUNCTION_PARAM hfile_get_word 0 text const char *
+@@@STRUCT HFileAny
+@@@STRUCT_MEMBER HFileAny type int
+@@@STRUCT_MEMBER HFileAny lineno int
+@@@STRUCT_MEMBER HFileAny filename char           *
+@@@UNION HFile int/type/HFileAny/any/HFileList/list/HFileSemicolon/semicolon/HFileText/text/HFileComment/comment
+@@@SECTION hard.h 

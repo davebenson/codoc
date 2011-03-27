@@ -1,0 +1,29 @@
+#! /usr/bin/perl -w
+
+%KV = @ARGV;
+for (keys(%KV)) { ${$_} = $KV{$_}; }
+
+$template_sequence_number = 0;
+
+print do_template_fh('STDIN');
+
+sub template {
+	my $ff = "FH$template_sequence_number";
+	$template_sequence_number++;
+	#print STDERR "[templating $_[0]]\n";
+	open $ff, "<$_[0]" or die "couldn't open template $_[0]";
+	my $rv = do_template_fh($ff);
+	close $ff;
+	#print STDERR "[done templating $_[0]]\n";
+	return $rv;
+}
+
+sub do_template_fh($) {
+	my $fh = $_[0];
+	my $rv = '';
+	while (<$fh>) {
+		s/@([^@]*)@/$1/eeg;
+		$rv .= $_;
+	}
+	return $rv;
+}

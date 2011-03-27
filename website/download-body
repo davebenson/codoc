@@ -1,0 +1,25 @@
+<h1>Packages</h1>
+<h1>Latest @$project@ Packages</h1>
+
+
+<ul>
+<li><a href="http://download.sourceforge.net/@$sf_project_name@/@$sf_project_name@-@$release_version@.tar.gz">@$project@ @$release_version@</a>
+</ul>
+
+
+<BR>
+<h1>CVS</h1>
+The current working version of the source code is available via anonymous cvs access thanks to <a href="http://www.sourceforge.net/">
+<IMG src="http://sourceforge.net/sflogo.php?group_id=@$sf_group_id@&type=1" width="88" height="31" border="0" alt="sourceforge.net"></a>.  This code may be less stable 
+than the latest package, but contains recent bug fixes and improvements.
+Compiling from source requires development libraries which the rpm and
+deb packages don't.
+<p>the following commands should suffice, press enter when prompted for a password.
+<ul>
+<li>  cvs -d:pserver:anonymous@$at@cvs.@$sf_project_name@.sourceforge.net:/cvsroot/@$sf_project_name@ login
+<li>  cvs -z3 -d:pserver:anonymous@$at@cvs.@$sf_project_name@.sourceforge.net:/cvsroot/@$sf_project_name@ co @$sf_project_name@
+</ul>
+<p>
+Then run <tt>autogen.sh</tt> to configure @$project@.
+
+<p>

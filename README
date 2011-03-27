@@ -1,0 +1,8 @@
+This is a tool for documenting the public interfaces
+of a C library or the internals of a C program.
+
+It scans the .h files in the current directory, makes
+a list of all the functions and other C objects, and a
+"template".  It writes out an updates template containing
+any new functions.  Then if that changed it writes out a
+new DocBook SGML description of your function.

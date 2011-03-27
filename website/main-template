@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title>
+      @$project@ - @$body@
+    </title>
+  </head>
+  <body bgcolor="#ffffff" color="#000000">
+   <font face="Arial,Helvetica,Lucida">
+    <table border="0">
+      <tr>
+        <td valign="top">
+	  @template("navbar-template")@
+	  <a href="http://sourceforge.net/project/?group_id=@$sf_group_id@">
+	    <img src="http://sourceforge.net/sflogo.php?group_id=@$sf_group_id@&type=1"></a>
+	</td>
+        <td valign="top">
+	  @template("$body-body")@
+	</td>
+      </tr>
+    </table>
+    </font>
+  </body>
+</html>

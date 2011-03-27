@@ -1,0 +1,10 @@
+Fri Apr 19 01:45:03 2002  Dave Benson  <daveb@ffem.org>
+
+* converted to XML template format.
+
+
+Sun Aug  6 23:52:06 2000  Dave Benson  <daveb@ffem.org>
+
+* initial release:  supports:
+  unions, structs (data and function pointer members),
+  enums, global data

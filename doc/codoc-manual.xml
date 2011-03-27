@@ -1,0 +1,449 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.0//EN"
+               "../dtd/4.0/docbookx.dtd">
+
+<book id="codoc-manual"><title><command>codoc</command> - a documentation tool</title>
+<chapter id="what-is-codoc"><title>What is <command>codoc</command>?</title>
+<para>
+  This is a tool for documenting the public interfaces
+  of a C library or the internals of a C program.
+</para>
+<para>
+  It scans the <filename>.h</filename> files
+  in the current directory, makes
+  a list of all the functions and other C objects, and a
+  reads a <firstterm>template</firstterm> file, <filename>codoc.template</filename>
+  which contains your comments about the functions.
+</para>
+<para>
+  It then writes out an updated template containing
+  any new functions.  If that changed, it also writes out a
+  new DocBook XML book detailing your headers;
+  by default that file is named <filename>codoc.sgml</filename>.
+</para>
+<para>
+  By default, the template file is named <filename>codoc.template</filename>,
+  and the XML file is named <filename>codoc.sgml</filename>.
+  When you run <command>codoc</command> it always reads in any
+  existing template file first for instructions about subdirectories
+  to traverse and <filename>.h</filename> files to omit from processing.
+</para>
+</chapter>
+<chapter id="invoking-codoc"><title>Invoking <command>codoc</command>.</title>
+<para>
+  By default, <command>codoc</command> tries to use
+  timestamps to determine if any work is needed.
+  If timestamps aren't working for you, <option>--force</option>
+  will always do all the work.
+</para>
+<para>
+  The default mode is <literal>auto</literal>,
+  the default XML output file is <filename>codoc.sgml</filename>
+  and the default template output file is <filename>codoc.template</filename>.
+</para>
+<para>
+  Here are all the options accepted by <command>codoc</command>:
+  <glosslist>
+   <glossentry>
+    <glossterm><option>--force</option></glossterm>
+    <glossdef><para>
+     Regenerate the template and the XML output,
+     even if timestamps indicate they are up-to-date.
+    </para></glossdef>
+   </glossentry>
+
+   <glossentry>
+    <glossterm><option>--sgml</option> <replaceable>XML-FILE</replaceable></glossterm>
+    <glossdef><para>
+     Specify the XML file to write.
+    </para></glossdef>
+   </glossentry>
+
+   <glossentry>
+    <glossterm><option>--template</option> <replaceable>TEMPLATE-FILE</replaceable></glossterm>
+    <glossdef><para>
+     Specify the template file to read and write.
+    </para></glossdef>
+   </glossentry>
+
+   <glossentry>
+    <glossterm><option>--mode</option> <replaceable>MODE</replaceable></glossterm>
+    <glossdef><para>
+     Specify what to do.
+     <variablelist>
+      <varlistentry>
+       <term>auto</term>
+       <listitem><para>use timestamps to figure out what to do.
+       </para></listitem>
+      </varlistentry>
+      <varlistentry>
+       <term>force</term>
+       <listitem><para>generate the template and the XML.
+       </para></listitem>
+      </varlistentry>
+      <varlistentry>
+       <term>template</term>
+       <listitem><para>generate the template.
+       </para></listitem>
+      </varlistentry>
+      <varlistentry>
+       <term>sgml</term>
+       <listitem><para>generate the DocBook XML.
+       </para></listitem>
+      </varlistentry>
+     </variablelist>
+     </para>
+    </glossdef>
+   </glossentry>
+  </glosslist>
+ </para>
+</chapter>
+<chapter id="what-does-codoc-recognize"><title>What does <command>codoc</command> recognize?</title>
+<para>
+  <command>codoc</command> does not know C; it just searches
+  for common <filename>.h</filename> structures.
+  Here we describe the patterns it knows about.
+</para>
+<sect1 id="functions"><title>Functions</title>
+<para>
+  Functions must never omit their return values,
+  not may they return function pointers or arrays,
+  except as typedef'd types.
+<screen>
+       void        function0();
+       void        function1(void);
+       void *      function2(void*          xyz);
+       int         function3(int**          x);
+</screen>
+  However, we don't allow:
+<screen>
+       void *      bad_function1(void) (int);
+       int         bad_function2(int array[2]);
+       int         bad_function3(int x) [2];
+</screen>
+  Instead use:
+<screen>
+       typedef void (*Func1)(int);
+       typedef int  Array2[2];
+
+       Func1       bad_function1_corrected(void);
+       int         bad_function2_corrected(Array2 array);
+       Array2      bad_function3_corrected(int x);
+</screen>
+</para>
+</sect1>
+<sect1 id="structures"><title>Structures</title>
+<para>
+  Structures must always be written member-by-member for now
+  and they must always start with an underscore, by gtk+ convention.
+  For example, these are not allowed:
+<screen>
+       struct _BadPoint0 {
+         int x, y;         /* not allowed to have two members per type */
+       };
+       struct BadPoint1 {  /* not allowed: must start with underscore (_) */
+         int x;
+	 int y;
+       };
+</screen>
+  Instead, write:
+<screen>
+       struct _Point2 {
+         int x;
+	 int y;
+       };
+</screen>
+  And you may write:
+<screen>
+       struct _Point3 {
+         int coordinates[2];
+       };
+</screen>
+       
+  Also function pointers (<firstterm>methods</firstterm>) are supported specially:
+
+<screen>
+    struct _WhateverClass {
+      int     (*function_name)(int           param1,
+                               int           param2);
+    };
+</screen>
+  You may separately document each parameter, as well
+  as the method itself.
+</para>
+<sect2 id="opaque-structures"><title>Opaque Structs</title>
+<para>
+  Often it is convenient to typedef the struct in the <filename>.h</filename>
+  file, then to define it privately in the <filename>.c</filename> file.
+  This way you don't have to expose any members of the structure.
+</para>
+<para>
+   To do this simply write:
+<screen>
+     typedef struct _OpaqueStruct OpaqueStruct;
+</screen>
+   Then write commentary at the <literal>@@@STRUCT_STUB</literal>
+   entry in the template file.
+  </para>
+  <para>
+   Note that if a <literal>@@@STRUCTURE</literal> template entry
+   exists, the <literal>@@@STRUCT_STUB</literal> is not copied into
+   the output, and a warning will flag it in the template file.
+   The intention of this strange behavior is to prevent
+   you from documenting the forward declaration and structure
+   body separately.  Just delete the <literal>STUB</literal>
+   if you expose the members.
+  </para>
+</sect2>
+
+</sect1>
+<sect1 id="enumerations"><title>Enumerations</title>
+<para>
+Enumerations are often written with typedefs:
+<screen>
+       typedef enum _ErrorCode {
+         ERROR_CODE_NOT_FOUND,
+	 ERROR_CODE_BAD_FORMAT,
+	 ERROR_CODE_UNKNOWN
+       } ErrorCode;
+</screen>
+But also recognized:
+<screen>
+       typedef enum {
+         ERROR_CODE_NOT_FOUND,
+	 ERROR_CODE_BAD_FORMAT,
+	 ERROR_CODE_UNKNOWN
+       } ErrorCode;
+</screen>
+And we also recognize the non-ANSI construct:
+<screen>
+       typedef enum _ErrorCode ErrorCode;
+       enum _ErrorCode {
+         ERROR_CODE_NOT_FOUND,
+	 ERROR_CODE_BAD_FORMAT,
+	 ERROR_CODE_UNKNOWN
+       };
+</screen>
+</para>
+</sect1>
+<sect1 id="function-typedefs"><title>Function Typedefs</title>
+<para>
+  Often it is useful to define a type of function which
+  can easily be passed to functions or put in structures.
+  These are supported, just write:
+<screen>
+     typedef   void   (*NewFunc)(void*    arg1,
+                                 int      arg2);
+</screen>
+   and you'll be asked to comment NewFunc, and each of
+   its parameters.
+</para>
+</sect1>
+<sect1><title>Unions</title>
+<para>
+Unions are written any way structures are, usually:
+<screen>
+       typedef union _Event Event;
+       union _Event {
+         int type;
+	 EventExpose expose;
+	 EventClicked clicked;
+       };
+</screen>
+For a union, you may only enter a comment for the
+whole thing - you may not comment individual members.
+</para>
+</sect1>
+<sect1 id="globals"><title>Globals</title>
+<para>
+Global variables are just written as usual:
+<screen>
+       int global;
+</screen>
+And you may add an <literal>extern</literal> if you wish:
+<screen>
+       extern int global;
+</screen>
+</para>
+</sect1>
+</chapter>
+<chapter id="template-file-format"><title>The template file format</title>
+<para>
+  Each recognized line begins with <literal>@@@</literal>;  all other content
+  is assumed to be documentation associated with the preceding
+  <literal>@@@</literal> divider.
+</para>
+<para>
+  Most <literal>@@@</literal> lines denote a particular bit of the
+  code:  a structure, or a function's parameter.  A few define
+  commands which tell how the <filename>.h</filename> files
+  should be scanned.
+</para>
+<sect1 id="c-constructs"><title>C Constructs</title>
+<para>
+<glosslist>
+
+ <glossentry>
+  <glossterm>
+   <literal>@@@FUNCTION</literal> <replaceable>function_name</replaceable>
+  </glossterm>
+  <glossdef><para>
+    Description of the behavior and usage of a function.
+  </para></glossdef>
+ </glossentry>
+
+ <glossentry>
+  <glossterm>
+   <literal>@@@FUNCTION_PARAM</literal> <replaceable>function_name</replaceable> <replaceable>param_index</replaceable> <replaceable>param_name</replaceable> <replaceable>param_type</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of the meaning of a parameter to a function.
+    (Should also mention if this parameter will be freed by the function.)
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@OPAQUE_STRUCT</literal> <replaceable>struct_name</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of the meaning of a structure that has no
+    public definition.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@STRUCT</literal> <replaceable>struct_name</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of the meaning of a structure.
+    This should mention what the structure represents.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@STRUCT_MEMBER</literal> <replaceable>struct_name</replaceable> <replaceable>member_name</replaceable> <replaceable>member_type</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of a member of a structure.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@STRUCT_METHOD</literal> <replaceable>struct_name</replaceable> <replaceable>method_name</replaceable> <replaceable>return_type</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of a function pointer in a structure.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@STRUCT_METHOD_PARAM</literal> <replaceable>struct_name</replaceable> <replaceable>method_name</replaceable> <replaceable>param_index</replaceable> <replaceable>name</replaceable> <replaceable>type</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of a parameter to a method (a function pointer in a structure).
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@FUNCTION_TYPEDEF</literal> <replaceable>function_name</replaceable> <replaceable>return_type</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of a function pointer signature, what it represents
+    and how it behaves when invoked.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@FUNCTION_TYPEDEF_PARAM</literal> <replaceable>function_name</replaceable> <replaceable>param_index</replaceable> <replaceable>param_name</replaceable> <replaceable>param_type</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of a parameter to function signature.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@ENUM</literal> <replaceable>enum_name</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    The meaning and/or use of a enumeration.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@ENUM_VALUE</literal> <replaceable>enum_name</replaceable> <replaceable>enum_value</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of one value of an enumeration.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@UNION</literal> <replaceable>union_name</replaceable> <replaceable>type1/name1/....</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of a C union.
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@GLOBAL</literal> <replaceable>name</replaceable> <replaceable>type</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Description of a global variable.
+  </para></glossdef>
+ </glossentry>
+</glosslist>
+</para>
+</sect1>
+<sect1><title>Per File Documentation</title>
+<para>
+<glosslist>
+ <glossentry>
+  <glossterm>
+   <literal>@@@SECTION</literal> <replaceable>hfilename</replaceable> <replaceable>title</replaceable> 
+  </glossterm>
+  <glossdef><para>
+    Specify a <filename>.h</filename> and a title.
+  </para></glossdef>
+ </glossentry>
+</glosslist>
+</para>
+</sect1>
+<sect1><title>Control Information</title>
+<para>
+<glosslist>
+ <glossentry>
+  <glossterm>
+   <literal>@@@SUBDIR</literal> <replaceable>directory</replaceable>
+  </glossterm>
+  <glossdef><para>
+    Specify a subdirectory to scan for <filename>.h</filename> files.
+  </para><para>
+    (The XML following this tag is ignored.)
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@XML_FILE</literal> <replaceable>output_file</replaceable>
+  </glossterm>
+  <glossdef><para>
+    Specify the file to write the docbook sgml.
+  </para><para>
+    (The XML following this tag is ignored.)
+  </para></glossdef>
+ </glossentry>
+ <glossentry>
+  <glossterm>
+   <literal>@@@OMIT</literal> <replaceable>h-file</replaceable>
+  </glossterm>
+  <glossdef><para>
+    Specify an <filename>.h</filename> file that
+    should not be included.
+  </para><para>
+    (The XML following this tag is ignored.)
+  </para></glossdef>
+ </glossentry>
+</glosslist>
+</para>
+</sect1>
+</chapter>
+</book>

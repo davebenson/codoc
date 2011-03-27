@@ -1,0 +1,1372 @@
+<?xml version="1.0"?>
+<template>
+  <subdirectory>.</subdirectory>
+  <section>
+    <h-filename>libcodoc.h</h-filename>
+    <title>libcodoc.h</title>
+    <blurb>This is structures representing the parsed
+C code, and high-level interfaces for loading, saving, and merging
+these structures.
+</blurb>
+    <structure>
+      <name>COParameter</name>
+      <blurb>A parameter to a function prototype.
+</blurb>
+      <member>
+        <name>name</name>
+        <blurb>Name of the parameter.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>type</name>
+        <blurb>Type of the parameter.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COFunction</name>
+      <blurb>A function prototype.
+</blurb>
+      <member>
+        <name>parameters</name>
+        <blurb>The parameters to the function.
+</blurb>
+        <type>COParameter **</type>
+      </member>
+      <member>
+        <name>function_name</name>
+        <blurb>Name of the function.
+</blurb>
+        <type>*</type>
+      </member>
+      <member>
+        <name>return_type</name>
+        <blurb>Return type of the function.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>num_parameters</name>
+        <blurb>Number of parameters that should be passed to the function.
+</blurb>
+        <type>int</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>name</name>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COMember</name>
+      <blurb>A member of a structure definition.
+</blurb>
+      <member>
+        <name>parameters</name>
+        <type>COParameter **</type>
+      </member>
+      <member>
+        <name>name</name>
+        <blurb>Name of the member.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>type</name>
+        <blurb>Type of the member.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>is_function</name>
+        <type>gboolean</type>
+      </member>
+      <member>
+        <name>num_parameters</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COStructure</name>
+      <blurb>A structure definition.
+</blurb>
+      <member>
+        <name>name</name>
+        <blurb>Name of the structure.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>members</name>
+        <blurb>Members of the structure, indexed by name.
+</blurb>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>member_names</name>
+        <blurb>Names of the members of the structure, as they appear in the .h file.
+</blurb>
+        <type>char **</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COEnumerationValue</name>
+      <blurb>One possible state of an enumeration.
+</blurb>
+      <member>
+        <name>name</name>
+        <blurb>The all-capital name of the value.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COEnumeration</name>
+      <blurb>An enumeration:  a list of defined values.
+</blurb>
+      <member>
+        <name>name</name>
+        <blurb>Name of this enumeration.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>values</name>
+        <blurb>Values of the enumeration, indexed by name.
+</blurb>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COEntry</name>
+      <blurb>A &lt;sect1&gt; block of the text.
+</blurb>
+      <member>
+        <name>structure</name>
+        <blurb>If non-NULL, this entry covers the referenced structure.
+</blurb>
+        <type>COStructure *</type>
+      </member>
+      <member>
+        <name>function</name>
+        <blurb>If non-NULL, this entry covers the referenced function.
+</blurb>
+        <type>COFunction *</type>
+      </member>
+      <member>
+        <name>enumeration</name>
+        <blurb>If non-NULL, this entry covers the referenced enumeration.
+</blurb>
+        <type>COEnumeration *</type>
+      </member>
+      <member>
+        <name>global</name>
+        <type>COGlobal *</type>
+      </member>
+      <member>
+        <name>the_union</name>
+        <type>COUnion *</type>
+      </member>
+      <member>
+        <name>function_typedef</name>
+        <type>COFunction *</type>
+      </member>
+      <member>
+        <name>struct_stub</name>
+        <type>COStructStub *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COSection</name>
+      <blurb>A &lt;chapter&gt; of the text.
+</blurb>
+      <member>
+        <name>title</name>
+        <blurb>The title of the section.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>first_entry</name>
+        <blurb>First entry in the section.
+</blurb>
+        <type>GSList *</type>
+      </member>
+      <member>
+        <name>last_entry</name>
+        <blurb>Last entry in the section.
+</blurb>
+        <type>GSList *</type>
+      </member>
+      <member>
+        <name>h_filename</name>
+        <blurb>the <filename>.h</filename> covered by this section.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+    </structure>
+    <structure>
+      <name>CODatabase</name>
+      <blurb>Database of all information in our present context.
+</blurb>
+      <member>
+        <name>last_section</name>
+        <blurb>Last COSection in the book.
+</blurb>
+        <type>GSList *</type>
+      </member>
+      <member>
+        <name>default_section</name>
+        <type>COSection *</type>
+      </member>
+      <member>
+        <name>structures</name>
+        <blurb>Map from type name (as a string) to COStructure.
+</blurb>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>functions</name>
+        <blurb>Map from the name of the function to COFunction.
+</blurb>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>sections</name>
+        <blurb>Map from the name of the <filename>.h</filename>-file to COSection.
+</blurb>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>first_section</name>
+        <blurb>First COSection in the book.
+</blurb>
+        <type>GSList *</type>
+      </member>
+      <member>
+        <name>enumerations</name>
+        <blurb>Map from the name of the <filename>.h</filename>-file to COSection.
+</blurb>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>globals</name>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>unions</name>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>subdirs</name>
+        <type>GSList *</type>
+      </member>
+      <member>
+        <name>cpp_flags</name>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>function_typedefs</name>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>struct_stubs</name>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>omissions</name>
+        <type>GHashTable *</type>
+      </member>
+      <member>
+        <name>xml_filename</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>output_doc_filename</name>
+        <type>char *</type>
+      </member>
+    </structure>
+    <function>
+      <name>co_database_new</name>
+      <return-type>CODatabase *</return-type>
+      <blurb>Create a new, empty database.
+</blurb>
+    </function>
+    <function>
+      <name>co_database_load</name>
+      <return-type/>
+      <blurb>Load a database from a template file.
+</blurb>
+      <parameter>
+        <type>const char *</type>
+        <name>filename</name>
+        <blurb>The template filename.
+</blurb>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_safe_save</name>
+      <return-type>gboolean</return-type>
+      <blurb>Save the database, taking special care to make a backup
+and fail gracefully.
+</blurb>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+        <blurb>Database to save.
+</blurb>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>filename</name>
+        <blurb>Output filename for template file.
+</blurb>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_merge</name>
+      <return-type>gboolean</return-type>
+      <blurb>Merge in all the specified <filename>.h</filename> files.
+</blurb>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+        <blurb>Database to augment.
+</blurb>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>cpp_flags</name>
+        <blurb>Flags to pass to <command>cpp</command>.
+</blurb>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_destroy</name>
+      <return-type>void</return-type>
+      <blurb>Destroy a database and its affiliated in memory data.
+</blurb>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+        <blurb>The database to destroy.
+</blurb>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_render</name>
+      <return-type>gboolean</return-type>
+      <blurb>Make DocBook SGML from the database.
+</blurb>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+        <blurb>The database to output as SGML.
+</blurb>
+      </parameter>
+    </function>
+    <structure>
+      <name>COContext</name>
+      <member>
+        <name>file</name>
+        <type>const char *</type>
+      </member>
+      <member>
+        <name>lineno</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>in_h_file</name>
+        <type>gboolean</type>
+      </member>
+      <member>
+        <name>privacy_info</name>
+        <type>COPrivacyInfo</type>
+      </member>
+    </structure>
+    <function>
+      <name>context_message</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>format</name>
+      </parameter>
+      <parameter>
+        <type>...</type>
+        <name>...</name>
+      </parameter>
+    </function>
+    <function>
+      <name>context_warning</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>format</name>
+      </parameter>
+      <parameter>
+        <type>...</type>
+        <name>...</name>
+      </parameter>
+    </function>
+    <structure>
+      <name>COUnion</name>
+      <member>
+        <name>name</name>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>num_objects</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>type_name_pairs</name>
+        <type>char **</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COGlobal</name>
+      <member>
+        <name>type</name>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>name</name>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>COStructStub</name>
+      <member>
+        <name>name</name>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>flags</name>
+        <type>COEntryFlags</type>
+      </member>
+      <member>
+        <name>xml_blurb</name>
+        <type>*</type>
+      </member>
+      <member>
+        <name>blurb</name>
+        <type>xmlNode *</type>
+      </member>
+      <member>
+        <name>conflict</name>
+        <type>xmlNode *</type>
+      </member>
+    </structure>
+    <function>
+      <name>co_database_set_cpp_flags</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>cpp_flags</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_subdir</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>subdirs</name>
+      </parameter>
+    </function>
+    <function>
+      <name>codoc_util_is_c_type</name>
+      <return-type>gboolean</return-type>
+      <parameter>
+        <type>const char **</type>
+        <name>pstr</name>
+      </parameter>
+    </function>
+    <structure>
+      <name>COPrivacyInfo</name>
+      <member>
+        <name>is_private</name>
+        <type>gboolean</type>
+      </member>
+    </structure>
+    <enumeration>
+      <name>COEntryFlags</name>
+      <value>
+        <name>CO_ENTRY_FLAGS_PRIVATE</name>
+      </value>
+      <value>
+        <name>CO_ENTRY_FLAGS_GOT_IN_TEMPLATE</name>
+      </value>
+      <value>
+        <name>CO_ENTRY_FLAGS_GOT_IN_HFILE</name>
+      </value>
+    </enumeration>
+    <function>
+      <name>co_database_load_xml</name>
+      <return-type>CODatabase *</return-type>
+      <parameter>
+        <type>const char *</type>
+        <name>filename</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_load_old</name>
+      <return-type>CODatabase *</return-type>
+      <parameter>
+        <type>const char *</type>
+        <name>filename</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_omission</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>omission</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_global</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>type</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_union</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>union_name</name>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>num_pairs</name>
+      </parameter>
+      <parameter>
+        <type>char **</type>
+        <name>type_name_pairs</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_struct_stub</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>struct_name</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_enum</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>enum_name</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_enum_value</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>enum_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>value_name</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_struct</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>struct_name</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_struct_member</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>struct_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>member_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>member_type</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_member_function</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>struct_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>return_type</name>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>num_parameters</name>
+      </parameter>
+      <parameter>
+        <type>COParameter **</type>
+        <name>parameters</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_struct_member_param</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>struct_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>method_name</name>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>param_index</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>param_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>param_type</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_new_section</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>h_filename</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>title</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_function</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>gboolean</type>
+        <name>is_typedef</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>function_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>return_type</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+    <function>
+      <name>co_database_add_function_param</name>
+      <return-type>void</return-type>
+      <parameter>
+        <type>CODatabase *</type>
+        <name>database</name>
+      </parameter>
+      <parameter>
+        <type>gboolean</type>
+        <name>is_typedef</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>function_name</name>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>param_index</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>parameter_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>parameter_type</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>xml_blurb</name>
+      </parameter>
+      <parameter>
+        <type>xmlNode *</type>
+        <name>conflict</name>
+      </parameter>
+      <parameter>
+        <type>COEntryFlags</type>
+        <name>flags</name>
+      </parameter>
+      <parameter>
+        <type>COContext *</type>
+        <name>context</name>
+      </parameter>
+    </function>
+  </section>
+  <section>
+    <h-filename>hfile.h</h-filename>
+    <title>hfile.h</title>
+    <blurb>Raw <filename>.h</filename> parsing code.
+Just converts it to lists and so on, no &quot;real&quot; parsing.
+</blurb>
+    <function>
+      <name>hfile_base_cast</name>
+      <return-type>HFile *</return-type>
+      <parameter>
+        <type>gpointer</type>
+        <name>ptr</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>file</name>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>line</name>
+      </parameter>
+    </function>
+    <function>
+      <name>hfile_cast</name>
+      <return-type>gpointer</return-type>
+      <parameter>
+        <type>gpointer</type>
+        <name>object</name>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>type</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>type_name</name>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>file</name>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>line</name>
+      </parameter>
+    </function>
+    <structure>
+      <name>HFileList</name>
+      <blurb>A list of other HFile sections.
+</blurb>
+      <member>
+        <name>type</name>
+        <blurb>The value <literal>HFILE_TYPE_LIST</literal>, used to
+dynamically identify HFiles.
+</blurb>
+        <type>int</type>
+      </member>
+      <member>
+        <name>has_braces</name>
+        <blurb>Whether the list was enclosed in curly braces.
+</blurb>
+        <type>gboolean</type>
+      </member>
+      <member>
+        <name>list</name>
+        <blurb>List of HFiles.
+</blurb>
+        <type>GSList *</type>
+      </member>
+      <member>
+        <name>lineno</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>filename</name>
+        <type>char *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>HFileSemicolon</name>
+      <blurb>An HFile representing a semicolon character.
+</blurb>
+      <member>
+        <name>type</name>
+        <blurb>The value <literal>HFILE_TYPE_SEMICOLON</literal>, used to
+dynamically identify HFiles.
+</blurb>
+        <type>int</type>
+      </member>
+      <member>
+        <name>lineno</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>filename</name>
+        <type>char *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>HFileText</name>
+      <blurb>An HFile representing some c code.
+</blurb>
+      <member>
+        <name>type</name>
+        <blurb>The value <literal>HFILE_TYPE_TEXT</literal>, used to
+dynamically identify HFiles.
+</blurb>
+        <type>int</type>
+      </member>
+      <member>
+        <name>text</name>
+        <blurb>The string represented.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>lineno</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>filename</name>
+        <type>char *</type>
+      </member>
+    </structure>
+    <structure>
+      <name>HFileComment</name>
+      <blurb>An HFile representing a comment.
+</blurb>
+      <member>
+        <name>type</name>
+        <blurb>The value <literal>HFILE_TYPE_COMMENT</literal>, used to
+dynamically identify HFiles.
+</blurb>
+        <type>int</type>
+      </member>
+      <member>
+        <name>comment</name>
+        <blurb>The comment text.
+</blurb>
+        <type>char *</type>
+      </member>
+      <member>
+        <name>lineno</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>filename</name>
+        <type>char *</type>
+      </member>
+    </structure>
+    <function>
+      <name>hfile_parse</name>
+      <return-type>HFileList *</return-type>
+      <blurb>Parse a HFile into our internal representation.
+</blurb>
+      <parameter>
+        <type>const char *</type>
+        <name>filename</name>
+        <blurb>The <filename>.h</filename> to parse.
+</blurb>
+      </parameter>
+      <parameter>
+        <type>const char *</type>
+        <name>cpp_options</name>
+        <blurb>Flags to pass to <command>cpp</command>.
+</blurb>
+      </parameter>
+    </function>
+    <function>
+      <name>hfile_destroy</name>
+      <return-type>void</return-type>
+      <blurb>Destroy an HFile and its affiliated data.
+</blurb>
+      <parameter>
+        <type>HFile *</type>
+        <name>to_destroy</name>
+        <blurb>The HFile to destroy.
+</blurb>
+      </parameter>
+    </function>
+    <function>
+      <name>hfile_dump</name>
+      <return-type>void</return-type>
+      <blurb>Print the HFile out.
+</blurb>
+      <parameter>
+        <type>HFile *</type>
+        <name>hfile</name>
+        <blurb>The HFile to print.
+</blurb>
+      </parameter>
+      <parameter>
+        <type>int</type>
+        <name>indent</name>
+        <blurb>The number of spaces to indent this output by.
+</blurb>
+      </parameter>
+      <parameter>
+        <type>FILE *</type>
+        <name>output</name>
+        <blurb>The FILE* to render to output to.
+</blurb>
+      </parameter>
+    </function>
+    <function>
+      <name>hfile_get_word</name>
+      <return-type>char *</return-type>
+      <parameter>
+        <type>const char *</type>
+        <name>text</name>
+      </parameter>
+    </function>
+    <structure>
+      <name>HFileAny</name>
+      <member>
+        <name>type</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>lineno</name>
+        <type>int</type>
+      </member>
+      <member>
+        <name>filename</name>
+        <type>char *</type>
+      </member>
+    </structure>
+    <union>
+      <name>HFile</name>
+      <parameter>
+        <type>int</type>
+        <name>type</name>
+      </parameter>
+      <parameter>
+        <type>HFileAny</type>
+        <name>any</name>
+      </parameter>
+      <parameter>
+        <type>HFileList</type>
+        <name>list</name>
+      </parameter>
+      <parameter>
+        <type>HFileSemicolon</type>
+        <name>semicolon</name>
+      </parameter>
+      <parameter>
+        <type>HFileText</type>
+        <name>text</name>
+      </parameter>
+      <parameter>
+        <type>HFileComment</type>
+        <name>comment</name>
+      </parameter>
+    </union>
+  </section>
+  <section>
+    <h-filename>hard.h</h-filename>
+    <title>hard.h</title>
+  </section>
+</template>

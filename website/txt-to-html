@@ -1,0 +1,75 @@
+#! /usr/bin/perl -w
+
+$threshold = 6;
+
+#
+# State may be one of:
+#       0      had whitespace as the last line
+#       1      had text indented < threshold spaces
+#       2      had text indented >= threshold spaces
+#       3      started parsing table-of-contents [but no toc yet..]
+#       4      parsing toc [no whitespace expected...]
+#
+# XXX: we should handle TABs...
+
+my $state = 0;
+
+for (<STDIN>) {
+    if ($state == 3) {
+        if (! /^\S/) {
+	    next;
+	}
+    }
+    if ($state == 3 || $state == 4) {
+    	if (/^\S/ && $state == 4) { print "<br>" };
+	$state = 4;
+	print;
+	if (/^\s*$/) {
+	    $state = 1;
+	}
+	next;
+    }
+    if (/\t/) {
+	die "file must never contain TAB characters (run through expand(1))";
+    }
+    if (/^[-=]{3,}\s*$/) {
+        print "<hr>\n";
+	next;
+    }
+    if ($state != 2 && /^\s*$/) {
+	if ($state != 0) { print "<p>\n" } else { $state = 0 }
+	next;
+    }
+    /^(\s*)/;
+    $indent = length($1);
+    my $new_state = ($indent >= $threshold ? 2 : 1);
+    if ($new_state == $state) {
+	if ($state == 2) {
+		s/\</&lt;/g; s/\>/&gt;/g;
+	}
+	if ($indent == 0) { chomp; print "<h2>$_</h2>\n" } else { print $_ }
+	if (/^table of contents/i) {
+	    $state = 3;
+	}
+        next;
+    }
+    if ($state == 2) {
+        print "</pre>\n";
+	if ($indent == 0) { chomp; print "<h2>$_</h2>\n" } else { print $_ }
+	$state = $new_state;
+	next;
+    }
+    if ($new_state == 2) {
+        print "<pre>\n";
+	s/\</&lt;/g; s/\>/&gt;/g;
+	print;
+	$state = $new_state;
+	next;
+    }
+    if ($new_state == 1) {
+        print;
+	$state = $new_state;
+	next;
+    }
+    die "should never get here (state=$state; new_state=$new_state)"
+}

@@ -1,0 +1,9 @@
+<html>
+
+  <title>
+    CODOC - @$filename@
+  </title>
+  <body bgcolor="#FFFFFF" text="#000000">
+    @`expand $filename | ./txt-to-html`@
+  </body>
+</html>
