@@ -2,7 +2,7 @@
 #define __CO_DOC_H_
 
 #include <glib.h>
-#include <tree.h>
+#include <libxml/parser.h>
 
 typedef struct _COContext COContext;
 typedef struct _COParameter COParameter;

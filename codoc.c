@@ -32,8 +32,7 @@ static void usage()
     "\tauto                      The default, use timestamps to decide\n"
     "\t                          what to do.\n"
     "\tforce                     Regenerate templates and xml.\n"
-    "\txml                      Regenerate xml only.\n"
-    "\txml                       Regenerate xml only [default].\n"
+    "\txml                       Regenerate xml only.\n"
     "\ttemplate                  Regenerate template only.\n"
      , g_get_prgname ());
   exit (1);

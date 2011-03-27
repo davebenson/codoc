@@ -1,7 +1,7 @@
 #include "libcodoc.h"
 #include <ctype.h>
 #include <string.h>
-#include <parser.h>		/* UGH */
+#include <libxml/parser.h>		/* UGH */
 #include <stdlib.h>
 
 static inline gboolean
@@ -61,7 +61,7 @@ blurb_to_xml (char *text)
   else
     {
       node = xmlDocGetRootElement (doc);
-      if (node == NULL || node->childs == NULL)
+      if (node == NULL || node->children == NULL)
 	{
 	  g_warning ("empty blurb: `%s'?", text);
 	  node = NULL;
@@ -69,7 +69,7 @@ blurb_to_xml (char *text)
       else
 	{
 	  g_assert (strcmp (node->name, "document") == 0);
-	  node = codocXmlCopyNodeList (node->childs);
+	  node = codocXmlCopyNodeList (node->children);
 	  xmlFreeDoc (doc);
 	}
     }

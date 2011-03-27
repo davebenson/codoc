@@ -1,5 +1,6 @@
 #include "libcodoc.h"
 #include <stdio.h>
+#include <string.h>
 
 static char *get_initial_type (const char *init_type)
 {

@@ -1,13 +1,13 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "libcodoc.h"
-#include <parser.h>
-#include <xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/xmlmemory.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 
-#define XML_NODE_GET_CHILDREN(node)		((node)->childs)
+#define XML_NODE_GET_CHILDREN(node)		((node)->children)
 
 #define CONTEXT	NULL
 
@@ -81,7 +81,7 @@ get_named_node_list (xmlNode *node, const char *key)
       }
   if (got == NULL)
     return NULL;
-  return codocXmlCopyNodeList (got->childs);
+  return codocXmlCopyNodeList (got->children);
 }
 static COEntryFlags
 get_entry_flags (xmlNode *node)

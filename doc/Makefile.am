@@ -13,7 +13,7 @@ EXTRA_DIST = $(documentation)
 html: codoc-manual.html
 
 codoc-manual.html: $(srcdir)/codoc-manual.xml
-	../codoc-config --exec --docbk-to-html1 codoc-manual.html $(srcdir)/codoc-manual.xml
+	echo XXX xmlto codoc-manual.html $(srcdir)/codoc-manual.xml
 
 codoc-manual.txt: codoc-manual.html
-	lynx -dump codoc-manual.html > codoc-manual.txt
+	echo XXX lynx -dump codoc-manual.html > codoc-manual.txt

@@ -1,6 +1,6 @@
 #include "libcodoc.h"
 #include "hfile.h"
-#include "xmlmemory.h"
+#include <libxml/xmlmemory.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <ctype.h>
@@ -138,7 +138,7 @@ are_xml_equal (xmlNode *a,
     {
     case XML_ELEMENT_NODE:
       return strcmp (a->name, b->name) == 0
-	 && are_xml_lists_equal (a->childs, b->childs);
+	 && are_xml_lists_equal (a->children, b->children);
     case XML_TEXT_NODE:
       {
 	char *cona = xmlNodeGetContent (a);

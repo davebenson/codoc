@@ -1,13 +1,14 @@
 AUTOMAKE_MODE = gnits
 bin_PROGRAMS = codoc
-bin_SCRIPTS = codoc-config
 noinst_PROGRAMS = codoctest
 codoctest_SOURCES = libcodoc.c codoctest.c hfile.c
 codoc_SOURCES = codoc.c hfile.c hfile.h libcodoc.c libcodoc.h cooutput.c \
 libcodoc-old-template.c libcodoc-xml.c
 SUBDIRS = doc
+INCLUDES = @GLIB_CFLAGS@ @XML_CFLAGS@
+LDADD = @GLIB_LIBS@ @XML_LIBS@
 
-EXTRA_DIST = build/pkgwrite codoc-config.in
+EXTRA_DIST = build/pkgwrite 
 DEBARCH = @ARCH@
 
 deb:
