@@ -697,7 +697,7 @@ co_database_safe_save (CODatabase       *database,
     user = "unknown";
   tmp_filename = g_strdup_printf ("%s.tmp-%d-%s", filename, getpid (), user);
   doc = co_database_to_template_doc (database);
-  if (doc == NULL || !xmlSaveFile (tmp_filename, doc))
+  if (doc == NULL || !xmlSaveFormatFile (tmp_filename, doc, TRUE))
     {
       g_warning ("saving %s failed", filename);
       unlink (tmp_filename);
