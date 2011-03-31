@@ -29,11 +29,9 @@ void codocXmlAddChildList (xmlNode *node, xmlNode *list);
 static xmlNode *
 protect_blurb (xmlNode *node)
 {
-  xmlNode *rv;
-  if (node == NULL)
-    return NULL;
-  rv = xmlNewNode (NULL, "para");
-  codocXmlAddChildList (rv, node);
+  xmlNode *rv = xmlNewNode (NULL, "para");
+  if (node != NULL)
+    codocXmlAddChildList (rv, node);
   return rv;
 }
 
@@ -60,8 +58,8 @@ static void enum_to_var_list_entry (gpointer       key,
   xmlNewChild (varlistentry, NULL, "term", enum_value->name);
   xmlAddChild (varlistentry, listitem);
 
-  /* is this ok? the second arg is a list! */
   xmlAddChild (listitem, protect_blurb (enum_value->blurb));
+  xmlAddChild (parent, varlistentry);
 }
 
 static void
@@ -75,7 +73,7 @@ addTitle (xmlNode *node, const char *type, const char *name)
 static xmlNode *
 enumeration_to_docbook_xml (COEnumeration  *enumeration)
 {
-  xmlNode *rv = xmlNewNode (NULL, "sect2");
+  xmlNode *rv = xmlNewNode (NULL, "sect1");
   xmlSetProp (rv, "id", enumeration->name);
   addTitle (rv, "enum", enumeration->name);
   xmlAddChild (rv, protect_blurb (enumeration->blurb));
@@ -97,7 +95,7 @@ function_to_docbook_xml       (COFunction     *function,
   int i;
   xmlNode *funcsynopsis, *funcprototype, *funcdef, *variablelist;
 
-  xmlNode *rv = xmlNewNode (NULL, "sect2");
+  xmlNode *rv = xmlNewNode (NULL, "sect1");
   xmlSetProp (rv, "id", function->name);
   addTitle (rv, is_typedef ? "typedef" : "function", function->name);
 
@@ -171,8 +169,9 @@ function_to_docbook_xml       (COFunction     *function,
   return rv;
 }
 
-static xmlNode *
-method_to_docbook_xml (COMember   *member)
+static void
+method_to_docbook_xml_list (COMember   *member,
+                            xmlNode    *parent)
 {
   int i;
   xmlNode *funcsynopsis, *funcprototype, *funcdef, *variablelist, *para;
@@ -202,39 +201,40 @@ method_to_docbook_xml (COMember   *member)
       xmlNewChild (paramdef, NULL, "parameter", param->name);
       xmlAddChild (funcprototype, paramdef);
     }
-  xmlAddChild (para, protect_blurb (member->blurb));
-  xmlNewChild (para, NULL, "para", "Parameters:");
-  variablelist = xmlNewNode (NULL, "variablelist");
-  xmlAddChild (para, variablelist);
+  xmlAddChild (parent, para);
+  xmlAddChild (parent, protect_blurb (member->blurb));
+  if (member->num_parameters)
+    {
+      para = xmlNewChild (parent, NULL, "para", "Parameters:");
+      variablelist = xmlNewNode (NULL, "variablelist");
+      xmlAddChild (para, variablelist);
 
-  for (i = 0; i < member->num_parameters; i++)
-    {
-      COParameter *param = member->parameters[i];
-      const char *blurb;
-      xmlNode *varlistentry, *listitem;
-      if (param == NULL)
-        continue;
-      varlistentry = xmlNewNode (NULL, "varlistentry");
-      xmlNewChild (varlistentry, NULL, "term", param->name);
-      listitem = xmlNewNode (NULL, "listitem");
-      xmlAddChild (listitem, protect_blurb (param->blurb));
-      xmlAddChild (varlistentry, listitem);
-      xmlAddChild (variablelist, varlistentry);
+      for (i = 0; i < member->num_parameters; i++)
+        {
+          COParameter *param = member->parameters[i];
+          const char *blurb;
+          xmlNode *varlistentry, *listitem;
+          if (param == NULL)
+            continue;
+          varlistentry = xmlNewNode (NULL, "varlistentry");
+          xmlNewChild (varlistentry, NULL, "term", param->name);
+          listitem = xmlNewNode (NULL, "listitem");
+          xmlAddChild (listitem, protect_blurb (param->blurb));
+          xmlAddChild (varlistentry, listitem);
+          xmlAddChild (variablelist, varlistentry);
+        }
     }
-  if (i == 0)
+  else
     {
-      xmlNewChild (para, NULL, "para", "None.");
+      para = xmlNewChild (parent, NULL, "para", "Parameters: none");
     }
-  return para;
 }
 
 static xmlNode *
 member_to_docbook_xml (COMember   *member)
 {
-  xmlNode *para = xmlNewNode (NULL, "para");
   g_assert (!member->is_function);
-  xmlAddChild (para, protect_blurb (member->blurb));
-  return para;
+  return protect_blurb (member->blurb);
 }
 
 static xmlNode *
@@ -246,7 +246,7 @@ structure_to_docbook_xml      (COStructure    *structure)
   guint count_methods = 0;
   guint count_members = 0;
 
-  sect = xmlNewNode (NULL, "sect2");
+  sect = xmlNewNode (NULL, "sect1");
   xmlSetProp (sect, "id", structure->name);
   addTitle (sect, "struct", structure->name);
 
@@ -285,7 +285,7 @@ structure_to_docbook_xml      (COStructure    *structure)
 	  varlistentry = xmlNewNode (NULL, "varlistentry");
 	  xmlNewChild (varlistentry, NULL, "term", member->name);
 	  listitem = xmlNewNode (NULL, "listitem");
-	  xmlAddChild (listitem, method_to_docbook_xml (member));
+          method_to_docbook_xml_list (member, listitem);
 	  xmlAddChild (varlistentry, listitem);
 	  xmlAddChild (variablelist, varlistentry);
 	}
@@ -341,10 +341,12 @@ static xmlNode *
 union_to_docbook_xml          (COUnion        *un)
 {
   int i;
-  xmlNode *rv = xmlNewNode (NULL, "para");
+  xmlNode *rv = xmlNewNode (NULL, "sect1");
+  xmlNode *para = xmlNewNode (NULL, "para");
   xmlNode *orderedlist = xmlNewNode (NULL, "orderedlist");
-  xmlAddChild (rv, xmlNewText ("This is a union of the following types:"));
-  xmlAddChild (rv, orderedlist);
+  xmlAddChild (para, xmlNewText ("This is a union of the following types:"));
+  xmlAddChild (para, orderedlist);
+  xmlAddChild (rv, para);
   for (i = 0; i < un->num_objects; i++)
     {
       xmlNode *listitem = xmlNewNode (NULL, "listitem");
@@ -363,13 +365,15 @@ union_to_docbook_xml          (COUnion        *un)
 static xmlNode *
 global_to_docbook_xml         (COGlobal       *global)
 {
+  xmlNode *rv = xmlNewNode (NULL, "listitem");
   xmlNode *para = xmlNewNode (NULL, "para");
+  xmlAddChild (rv, para);
   xmlNewChild (para, NULL, "type", global->type);
   if (needs_space_after (global->type))
     xmlAddChild (para, xmlNewText (" "));
   xmlNewChild (para, NULL, "structfield", global->name);	/*XXX*/
-  xmlAddChild (para, protect_blurb (global->blurb));
-  return para;
+  xmlAddChild (rv, protect_blurb (global->blurb));
+  return rv;
 }
 
 static xmlNode *
@@ -410,18 +414,40 @@ section_to_docbook_xml (COSection    *section)
       xmlAddChild (title, xmlNewText (")"));
     }
   xmlAddChild (rv, title);
-  xmlAddChild (rv, protect_blurb (section->blurb));
-
-  for (list = section->first_entry; list != NULL; list = list->next)
+  if (section->blurb)
     {
-      COEntry *entry = list->data;
-      xmlNode *result = entry_to_docbook_xml (entry);
-      if (result != NULL)
-	xmlAddChild (rv, result);
-      else
-	{
-	  g_warning ("error converting entry to docbook");
-	}
+      xmlNode *abs = xmlNewNode (NULL, "abstract");
+      xmlAddChild (abs, protect_blurb (section->blurb));
+      xmlAddChild (rv, abs);
+    }
+
+  unsigned n_globals = 0;
+  for (list = section->first_entry; list != NULL; list = list->next)
+    if (((COEntry*)list->data)->global == NULL)
+      {
+        COEntry *entry = list->data;
+        xmlNode *result = entry_to_docbook_xml (entry);
+        if (result != NULL)
+          xmlAddChild (rv, result);
+        else
+          {
+            g_warning ("error converting entry to docbook");
+          }
+      }
+    else
+      n_globals++;
+  if (n_globals != 0)
+    {
+      xmlNode *sect = xmlNewNode (NULL, "sect1");
+      xmlNewChild (sect, NULL, "title", "Globals");
+      xmlNode *para = xmlNewNode (NULL, "para");
+      xmlNode *ilist = xmlNewNode (NULL, "itemizedlist");
+      xmlAddChild (sect, para);
+      xmlAddChild (para, ilist);
+      for (list = section->first_entry; list != NULL; list = list->next)
+        if (((COEntry*)list->data)->global != NULL)
+          xmlAddChild (ilist, entry_to_docbook_xml (list->data));
+      xmlAddChild (rv, sect);
     }
   return rv;
 }
@@ -434,11 +460,14 @@ database_to_docbook_xml (CODatabase *database)
   for (list = database->first_section; list != NULL; list = list->next)
     {
       COSection *section = list->data;
-      xmlNode *chapter = section_to_docbook_xml (section);
-      if (chapter == NULL)
-	g_warning ("section %s failed?", section->h_filename);
-      else
-	xmlAddChild (root, chapter);
+      if (section->first_entry)
+        {
+          xmlNode *chapter = section_to_docbook_xml (section);
+          if (chapter == NULL)
+            g_warning ("section %s failed?", section->h_filename);
+          else
+            xmlAddChild (root, chapter);
+        }
     }
   return root;
 }
@@ -464,7 +493,11 @@ gboolean          co_database_render   (CODatabase       *database)
       return FALSE;
     }
   xmlDocSetRootElement (doc, root);
-  xmlSaveFile (filename, doc);
+
+  xmlCreateIntSubset (doc, "book",
+                      "-//OASIS//DTD DocBook XML V4.2//EN",
+                      "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd");
+  xmlSaveFormatFile (filename, doc, TRUE);
   xmlFreeDoc (doc);
   return TRUE;
 }
