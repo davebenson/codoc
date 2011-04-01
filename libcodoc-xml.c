@@ -390,6 +390,8 @@ process_section_node (CODatabase *database,
   for (at = XML_NODE_GET_CHILDREN (node); at != NULL; at = at->next)
     {
       guint i;
+      if (at->type == XML_TEXT_NODE)
+        continue;
       for (i = 0; node_types[i].name != NULL; i++)
 	if (strcmp (node_types[i].name, at->name) == 0)
 	  {
@@ -430,6 +432,8 @@ co_database_load_xml (const char *filename)
   database = co_database_new ();
   for (child = XML_NODE_GET_CHILDREN (root); child != NULL; child = child->next)
     {
+      if (child->type == XML_TEXT_NODE)
+        continue;
       if (strcmp (child->name, "section") == 0)
 	{
 	  if (!process_section_node (database, child))
